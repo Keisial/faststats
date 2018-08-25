@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
 	int is_signed = 1;
 
 	if (argc < 3) {
-		fprintf(stderr, "Usage: %s <filename> <index> [[+|-]<value>]\n", argv[0]);
+		fprintf(stderr, "Usage: %s <filename> <index> [[+|-|=]<value>]\n", argv[0]);
 		return 1;
 	}
 
@@ -27,20 +27,25 @@ int main(int argc, char **argv) {
 	if (argc < 4) {
 		printf(is_signed ? "Value at %d is %lld\n" : "Value at %d is %llu\n", index, faststats_read(index));
 	} else {
-		const char* description;
+		const char* action, *value_description = "it is now";
 		FASTSTATS_TYPE (*faststats_function)(int index, FASTSTATS_TYPE value);
 
 		if (argv[3][0] == '+') {
-			description = "Added";
+			action = "Added";
 			faststats_function = faststats_add;
 			argv[3]++;
 		} else if (argv[3][0] == '-') {
-			description = "Substracted";
+			action = "Substracted";
 			faststats_function = faststats_sub;
 			argv[3]++;
-		} else {
-			description = "Stored";
+		} else if (argv[3][0] == '=') {
+			action = "Stored";
 			faststats_function = faststats_store;
+			argv[3]++;
+		} else {
+			action = "Saved";
+			value_description = "it used to be";
+			faststats_function = faststats_exchange;
 		}
 
 		errno = 0;
@@ -51,8 +56,8 @@ int main(int argc, char **argv) {
 		}
 
 		FASTSTATS_TYPE new_value = faststats_function(index, value);
-		printf(is_signed ? "%s %lld at %d, it is now %lld\n" : 
-			"%s %llu at %d, it is now %llu\n", description, value, index, new_value);
+		printf(is_signed ? "%s %lld at %d, %s %lld\n" :
+			"%s %llu at %d, %s %llu\n", action, value, index, value_description, new_value);
 	}
 
 	faststats_finit();

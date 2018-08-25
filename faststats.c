@@ -43,10 +43,14 @@ FASTSTATS_TYPE faststats_store(int index, FASTSTATS_TYPE value) {
 	return value;
 }
 
+FASTSTATS_TYPE faststats_exchange(int index, FASTSTATS_TYPE value) {
+	return __atomic_exchange_n(&memory_block[index], value, __ATOMIC_SEQ_CST);
+}
+
 FASTSTATS_TYPE faststats_add(int index, FASTSTATS_TYPE value) {
 	return __atomic_add_fetch(&memory_block[index], value, __ATOMIC_SEQ_CST);
 }
 
-FASTSTATS_TYPE faststats_sub(int index, FASTSTATS_TYPE value) {
+FASTSTATS_TYPE faststats_sub(int index, STATS_TYPE value) {
 	return __atomic_sub_fetch(&memory_block[index], value, __ATOMIC_SEQ_CST);
 }
