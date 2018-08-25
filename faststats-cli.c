@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 		printf(is_signed ? "Value at %d is %lld\n" : "Value at %d is %llu\n", index, faststats_read(index));
 	} else {
 		const char* description;
-		STATS_TYPE (*faststats_function)(int index, STATS_TYPE value);
+		FASTSTATS_TYPE (*faststats_function)(int index, FASTSTATS_TYPE value);
 
 		if (argv[3][0] == '+') {
 			description = "Added";
@@ -44,13 +44,13 @@ int main(int argc, char **argv) {
 		}
 
 		errno = 0;
-		STATS_TYPE value = strtoll(argv[3], &endptr, 10);
+		FASTSTATS_TYPE value = strtoll(argv[3], &endptr, 10);
 		if (errno || *endptr) {
 			fprintf(stderr, "Bad value %s\n", argv[3]);
 			return 3;
 		}
 
-		STATS_TYPE new_value = faststats_function(index, value);
+		FASTSTATS_TYPE new_value = faststats_function(index, value);
 		printf(is_signed ? "%s %lld at %d, it is now %lld\n" : 
 			"%s %llu at %d, it is now %llu\n", description, value, index, new_value);
 	}
